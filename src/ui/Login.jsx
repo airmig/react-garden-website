@@ -18,7 +18,6 @@ function Login() {
     const destination = API_BASE_URL + "login/";
     try {
       setError("");
-      console.log("loggin in");
       const response = await fetch(destination, {
         method: "POST",
         headers: {
@@ -27,11 +26,9 @@ function Login() {
         body: JSON.stringify({ username: username, password: password }),
       });
       const data = await response.json();
-      console.log("login result data", data.token.length);
       if (data.token && data.token.length > 0) {
-        console.log("token", data.token);
         dispatch(setLoginToken(data.token));
-        navigate("/collection");
+        navigate(-1);
       } else {
         setError("Invalid credentials");
       }

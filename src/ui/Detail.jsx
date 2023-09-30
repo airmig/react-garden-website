@@ -7,12 +7,15 @@ import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../util/constants";
 
 function Detail() {
-  const state = useSelector((state) => state.plant);
+  //const state = useSelector((state) => state.plant);
+  const selectedPlant = useSelector((state) => state.plant.selectedId);
   const [isInCollection, setIsInCollection] = useState(false);
   const navigate = useNavigate();
+  const loggedToken = useSelector((state) => state.plant.loginToken);
+  const isLoggedIn = loggedToken && loggedToken.length > 0;
   const { isLoading, data, error, refetch, isFetching } = useQuery({
     queryKey: ["plant-detail"],
-    queryFn: () => searchDetail(state.selectedId),
+    queryFn: () => searchDetail(selectedPlant),
   });
 
   useEffect(
@@ -40,9 +43,9 @@ function Detail() {
           //pass
         }
       }
-      getReference(state.selectedId);
+      getReference(selectedPlant);
     },
-    [state.selectedId]
+    [selectedPlant]
   );
 
   function addCollectionItem() {
@@ -52,7 +55,7 @@ function Detail() {
     newPlantRecord.scientific_name = data.data.scientific_name;
     newPlantRecord.genus = data.data.genus.name;
     newPlantRecord.family = data.data.family.name;
-    newPlantRecord.external_id = state.selectedId;
+    newPlantRecord.external_id = selectedPlant;
     newPlantRecord.api_data = data.data;
     async function addItem(itemToAdd) {
       const destination = API_BASE_URL + "plants/add/";
@@ -61,7 +64,7 @@ function Detail() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Token " + state.loginToken,
+            Authorization: "Token " + loggedToken,
           },
           body: JSON.stringify(itemToAdd),
         });
@@ -104,22 +107,26 @@ function Detail() {
               is {data.data.author}. The first publication was {data.data.year}.
             </p>
           )}
-          {!isInCollection ? (
-            <button
-              onClick={() => addCollectionItem()}
-              type="button"
-              className="mt-[10px] w-[200px] py-2 px-4  bg-green-600 hover:bg-green-700 focus:ring-green-500 focus:ring-offset-green-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
-            >
-              Add to collection
-            </button>
+          {isLoggedIn ? (
+            !isInCollection ? (
+              <button
+                onClick={() => addCollectionItem()}
+                type="button"
+                className="mt-[10px] w-[200px] py-2 px-4  bg-green-600 hover:bg-green-700 focus:ring-green-500 focus:ring-offset-green-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
+              >
+                Add to collection
+              </button>
+            ) : (
+              <button
+                onClick={() => viewCollectionItem()}
+                type="button"
+                className="mt-[10px] w-[200px] py-2 px-4  bg-orange-600 hover:bg-orange-700 focus:ring-orange-500 focus:ring-orange-green-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
+              >
+                View in collection
+              </button>
+            )
           ) : (
-            <button
-              onClick={() => viewCollectionItem()}
-              type="button"
-              className="mt-[10px] w-[200px] py-2 px-4  bg-orange-600 hover:bg-orange-700 focus:ring-orange-500 focus:ring-orange-green-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
-            >
-              View in collection
-            </button>
+            ""
           )}
           <dl className="mt-5 grid grid-cols-1 sm:grid-cols-2 sm:gap-y-16 lg:gap-x-8">
             <div className="border-t border-gray-200 pt-4">
