@@ -5,12 +5,18 @@ import { searchDetail } from "../util/api";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../util/constants";
+import { useDispatch } from "react-redux";
+import {
+  setSelectedItemId,
+  setSelectedCollectionItem,
+} from "../features/plant/plantSlice";
 
 function Detail() {
   //const state = useSelector((state) => state.plant);
   const selectedPlant = useSelector((state) => state.plant.selectedId);
   const [isInCollection, setIsInCollection] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const loggedToken = useSelector((state) => state.plant.loginToken);
   const isLoggedIn = loggedToken && loggedToken.length > 0;
   const { isLoading, data, error, refetch, isFetching } = useQuery({
@@ -28,13 +34,13 @@ function Detail() {
   useEffect(
     function () {
       async function getReference(external_id) {
-        // console.log("searching load", external_id);
         const destination = API_BASE_URL + "external_id/" + external_id;
         try {
           const response = await fetch(destination);
           const data = await response.json();
-          // console.log("sreceived data", data.external_id);
           if (data.external_id) {
+            dispatch(setSelectedItemId(data.id));
+            dispatch(setSelectedCollectionItem(data.api_data));
             setIsInCollection(true);
           }
         } catch (err) {
@@ -84,7 +90,7 @@ function Detail() {
     addItem(newPlantRecord);
   }
   function viewCollectionItem() {
-    navigate("/collection");
+    navigate("/detail-collection");
   }
 
   if (isLoading || isFetching) return <Spinner />;
