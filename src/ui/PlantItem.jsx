@@ -1,4 +1,10 @@
+import { IMAGE_BASE_URL } from "../util/constants";
 function PlantItem({ item, onClick }) {
+  let images = JSON.parse(item.images);
+  let imageUrl =
+    images[0] !== undefined
+      ? IMAGE_BASE_URL + images[0].fields.image_url
+      : item.api_data.image_url;
   return (
     <div className="relative flex-shrink-0 max-w-xs mx-2 mb-6 overflow-hidden bg-green-500 rounded-lg shadow-lg">
       <svg
@@ -30,8 +36,8 @@ function PlantItem({ item, onClick }) {
           {/* <source srcSet={item.api_data.image_url} /> */}
           <img
             className="relative w-[248px] h-[248px]"
-            src={item.api_data.image_url}
-            alt="Picture unavailable"
+            src={imageUrl}
+            alt={imageUrl}
           />
         </picture>
       </div>
