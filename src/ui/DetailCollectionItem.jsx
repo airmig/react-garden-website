@@ -1,3 +1,4 @@
+// need to refactor this page
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import Modal from "./Modal";
@@ -20,6 +21,9 @@ function DetailCollectionItem() {
   const [image, setImage] = useState(null);
   const [status, setStatus] = useState(null);
   const queryClient = useQueryClient();
+
+  const [isUploading, setIsUploading] = useState(false);
+  const [actionTitle, setActionTitle] = useState();
   const scrollToTop = () => {
     window.scrollTo({ top: 0 });
   };
@@ -40,6 +44,8 @@ function DetailCollectionItem() {
 
   function handleAddImage() {
     let formData = new FormData();
+    setIsUploading(true);
+    setActionTitle("Adding image...");
     formData.append("date", new Date().toISOString().split("T").at(0));
     formData.append("plant", itemId);
     formData.append("image_url", image);
@@ -55,7 +61,6 @@ function DetailCollectionItem() {
         });
 
         const data = await response.json();
-
         queryClient.invalidateQueries({ queryKey: "images" });
         if (data.detail) {
           alert(data.detail);
@@ -63,9 +68,10 @@ function DetailCollectionItem() {
           handleCancel();
         }
       } catch (err) {
-        //pass
+        //need to add window with error
       } finally {
-        //pass
+        setIsUploading(false);
+        setActionTitle("");
       }
       setAddAction("");
     }
@@ -303,6 +309,8 @@ function DetailCollectionItem() {
                         onCancel={handleCancel}
                         onClick={handleAddImage}
                         cancelText="Cancel"
+                        isAction={isUploading}
+                        isActionTitle={actionTitle}
                       >
                         <Image onTextChange={handleImageChange} />
                       </Modal>

@@ -61,6 +61,8 @@ function Login() {
       onCancel={handleCancel}
       onClick={handleClick}
       cancelText="Cancel"
+      isAction={false}
+      isActionTitle=""
     >
       <LoginForm
         error={error}

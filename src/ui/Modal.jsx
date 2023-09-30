@@ -1,3 +1,4 @@
+import Spinner from "./Spinner";
 function Modal({
   children,
   confirmText,
@@ -5,6 +6,8 @@ function Modal({
   title,
   onCancel,
   onClick,
+  isAction,
+  isActionTitle,
 }) {
   return (
     <div
@@ -41,11 +44,11 @@ function Modal({
                     className="text-base font-semibold leading-6 text-gray-900"
                     id="modal-title"
                   >
-                    {title}
+                    {isActionTitle !== "" ? isActionTitle : title}
                   </h3>
                   <div className="mt-2">
                     <div className="text-sm text-gray-500">
-                      <>{children}</>
+                      <>{isAction ? <Spinner /> : children}</>
                     </div>
                   </div>
                 </div>
